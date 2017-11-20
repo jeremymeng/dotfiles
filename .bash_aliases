@@ -4,8 +4,9 @@ alias ll='ls -alF --color'
 alias m='less'
 alias l='ls -aF --color'
 alias psgrep='ps -aux | grep --color'
+alias envgrep='printenv | grep --color'
 alias em='emacsclient -t'
-alias ed='emacs --daemon'
+alias emd='emacs --daemon'
 alias h='history'
 
 # I don't want to maintain another rc file for bash so put everything here.
