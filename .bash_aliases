@@ -14,5 +14,8 @@ alias emd='emacs --daemon'
 
 alias h='history'
 
+alias ta='tmux attach'
+alias td='tmux detach'
+
 # I don't want to maintain another rc file for bash so put everything here.
 PS1='\[\e[0;32m\]\u\[\e[m\] \[\e[1;34m\]\w\[\e[m\] \[\e[1;32m\]\$\[\e[m\] \[\e[1;37m\]'
