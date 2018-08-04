@@ -18,6 +18,8 @@ values."
    ;; of a list then all discovered layers will be installed.
    dotspacemacs-configuration-layers
    '(
+     yaml
+     javascript
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
@@ -26,31 +28,38 @@ values."
      auto-completion
      ;; better-defaults
      csharp
-     dockerfile
-     emacs-lisp
-     emoji
+     docker
+     ;; emacs-lisp
+     ;; emoji
      ibuffer
-     git
+     (git :variables
+          git-magit-status-fullscreen t)
      github
      markdown
-     org
-     react
-     restclient
+     ;; org
+     ;; react
+     ;; restclient
      search-engine
      ;; (shell :variables
      ;;        shell-default-height 30
      ;;        shell-default-position 'bottom)
      spell-checking
      ;; syntax-checking
+     twitter
      ;; version-control
-     windows-scripts
-     xkcd
+     ;; windows-scripts
+     ;; xkcd
      )
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '()
+   dotspacemacs-additional-packages
+   '(
+     zenburn-theme
+     editorconfig
+     atomic-chrome
+     )
    ;; A list of packages and/or extensions that will not be install and loaded.
    dotspacemacs-excluded-packages '()
    ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
@@ -105,13 +114,14 @@ values."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(spacemacs-dark
+   dotspacemacs-themes '(zenburn
+                         spacemacs-dark
                          spacemacs-light
                          solarized-light
                          solarized-dark
                          leuven
                          monokai
-                         zenburn)
+                         )
    ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state t
    ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
@@ -250,12 +260,23 @@ executes.
  This function is mostly useful for variables that need to be set
 before packages are loaded. If you are unsure, you should try in setting them in
 `dotspacemacs/user-config' first."
+
+  ; Workaround use-package issue
+  (push '("melpa-stable" . "stable.melpa.org/packages/") configuration-layer--elpa-archives)
+  (push '(use-package . "melpa-stable") package-pinned-packages)
+
   ;(setq dotspacemacs-elpa-https nil)
-  (setq-default ispell-program-name "c:\\tools\\Aspell\\bin\\aspell.exe")
-  (setq markdown-command "c:\\tools\\bin\\multimarkdown.exe")
-  (setq-default omnisharp--curl-executable-path "c:\\tools\\bin\\curl.exe")
-  (setq-default omnisharp-server-executable-path "C:\\github\\omnisharp-server\\OmniSharp\\bin\\Debug\\OmniSharp.exe")
-  (setq initial-frame-alist '((top . 50) (left . 200) (width . 130) (height . 60)))
+  (setq-default ispell-program-name
+                "c:\\tools\\Aspell\\bin\\aspell.exe")
+  (setq markdown-command
+        "c:\\tools\\bin\\multimarkdown.exe")
+  (setq-default omnisharp--curl-executable-path
+                "c:\\tools\\bin\\curl.exe")
+  (setq-default omnisharp-server-executable-path
+                "C:\\github\\omnisharp-server\\OmniSharp\\bin\\Debug\\OmniSharp.exe")
+                ;"C:\\github\\jeremymeng\\omnisharp-roslyn\\artifacts\\publish\\OmniSharp\\default\\net46\\OmniSharp.exe")
+  (setq with-editor-emacsclient-executable
+        "c:/tools/emacs-25.3-w64/bin/emacsclientw.exe")
   )
 
 (defun dotspacemacs/user-config ()
@@ -270,6 +291,7 @@ you should place your code here."
                 "c:\\tools\\bin\\find.exe . -type f -print0 | \"xargs\" -0 grep -nH -e ")
   (setq-default grep-find-template
                 "c:\\tools\\bin\\find.exe . <X> -type f <F> -print0 | \"xargs\" -0 grep <C> -nH -e <R>")
+  (setq-default dotspacemacs-line-numbers t)
   (setq fill-column 80)
   (auto-image-file-mode t)
   (setq-default indent-tabs-mode nil)
@@ -277,7 +299,48 @@ you should place your code here."
         `((".*" . ,temporary-file-directory)))
   (setq auto-save-file-name-transforms
         `((".*" ,temporary-file-directory t)))
+  (setq-default show-trailing-whitespace t)
+  (server-start)
+  (atomic-chrome-start-server)
+  (setq atomic-chrome-default-major-mode 'markdown-mode)
+  (setq atomic-chrome-url-major-mode-alist
+        '(("github\\.com" . gfm-mode)))
+  (setq atomic-chrome-buffer-open-style 'full)
+  (add-to-list 'auto-mode-alist '("stack\\(exchange\\|overflow\\)\\.com\\.[a-z0-9]+\\.txt" . markdown-mode))
+  (add-to-list 'auto-mode-alist '("github\\.com\\.[a-z0-9]+\\.txt" . markdown-mode))
+  (require 'helm-bookmark)
+  ;(pdftools-install)
+  ;; specify font for all unicode characters
+  (when (member "Symbola" (font-family-list))
+    (set-fontset-font t 'unicode "Symbola" nil 'prepend))
+  (setq browse-url-browser-function 'browse-url-firefox)
+  (setq browse-url-firefox-program "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe")
+  (setq magit-repository-directories
+        `(
+          ("c:\\github\\jeremymeng" . 1)
+          ;(,"c:\\vso" . 2)
+          ))
+  ;; avoid split vertically
+  (setq split-height-threshold nil)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   (quote
+    ("bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" "9d91458c4ad7c74cf946bd97ad085c0f6a40c370ac0a1cbeb2e3879f15b40553" default)))
+ '(evil-want-Y-yank-to-eol t)
+ '(package-selected-packages
+   (quote
+    (twittering-mode ghub let-alist pdf-tools atomic-chrome websocket logito docker tablist docker-tramp editorconfig yaml-mode shut-up parent-mode pkg-info epl gitignore-mode flx goto-chg diminish winum fuzzy json-snatcher json-reformat zenburn-theme csv-mode spinner haml-mode bind-key powerline org alert flycheck markdown-mode multiple-cursors hydra iedit csharp-mode dash-functional tern yasnippet packed auto-complete company highlight anzu smartparens bind-map evil undo-tree gh magit request helm helm-core popup avy s pcache projectile js2-mode uuidgen pug-mode org-projectile org-download ob-http livid-mode skewer-mode simple-httpd link-hint hide-comnt github-search magit-popup git-commit with-editor dash async marshal ht flyspell-correct-helm flyspell-correct eyebrowse evil-visual-mark-mode evil-unimpaired evil-ediff dumb-jump f column-enforce-mode xkcd ws-butler window-numbering which-key web-mode web-beautify volatile-highlights vi-tilde-fringe use-package toc-org tagedit spacemacs-theme spaceline smooth-scrolling smeargle slim-mode scss-mode sass-mode restclient restart-emacs rainbow-delimiters quelpa powershell popwin persp-mode pcre2el paradox page-break-lines orgit org-repo-todo org-present org-pomodoro org-plus-contrib org-bullets open-junk-file omnisharp neotree move-text mmm-mode markdown-toc magit-gitflow magit-gh-pulls macrostep lorem-ipsum linum-relative leuven-theme less-css-mode json-mode js2-refactor js-doc jade-mode info+ indent-guide ido-vertical-mode ibuffer-projectile hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flyspell helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gnuplot github-clone github-browse-file gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gist gh-md flx-ido fill-column-indicator fancy-battery expand-region exec-path-from-shell evil-visualstar evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-args evil-anzu eval-sexp-fu engine-mode emoji-cheat-sheet-plus emmet-mode elisp-slime-nav dockerfile-mode define-word company-web company-tern company-statistics company-quickhelp company-emoji coffee-mode clean-aindent-mode buffer-move bracketed-paste auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell))))
+;; (custom-set-faces
+;;  ;; custom-set-faces was added by Custom.
+;;  ;; If you edit it by hand, you could mess it up, so be careful.
+;;  ;; Your init file should contain only one such instance.
+;;  ;; If there is more than one, they won't work right.
+;;  '(default ((t (:foreground "#DCDCCC" :background "#3F3F3F")))))
