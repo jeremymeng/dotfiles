@@ -8,6 +8,7 @@ alias m='less'
 
 alias envgrep='printenv | grep --color'
 alias psgrep='ps -aux | grep -v "grep --color" | grep --color'
+alias hgrep='history | grep --color'
 
 alias em='emacsclient -t'
 alias emd='emacs --daemon'
