@@ -52,12 +52,13 @@ This function should only modify configuration layer settings."
      ibuffer
      (git :variables
           ;; git-magit-status-fullscreen t
-          git-enable-github-support t)
+          )
+     github
      helm
      lsp
      markdown
      ;; multiple-cursors
-     ;; org
+     org
      ;; react
      restclient
      search-engine
@@ -88,7 +89,9 @@ This function should only modify configuration layer settings."
    ;; To use a local version of a package, use the `:location' property:
    ;; '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
-   dotspacemacs-additional-packages '()
+   dotspacemacs-additional-packages '(
+                                      edit-indirect
+                                      )
 
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -177,6 +180,11 @@ It should only modify the values of Spacemacs settings."
    ;; section of the documentation for details on available variables.
    ;; (default 'vim)
    dotspacemacs-editing-style 'emacs
+
+   ;; If non-nil show the version string in the Spacemacs buffer. It will
+   ;; appear as (spacemacs version)@(emacs version)
+   ;; (default t)
+   dotspacemacs-startup-buffer-show-version t
 
    ;; Specify the startup banner. Default value is `official', it displays
    ;; the official spacemacs logo. An integer value is the index of text
@@ -484,7 +492,8 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
         '(("melpa" . "melpa.org/packages/")
                                         ; ("org" . "orgmode.org/elpa/")
           ("gnu" . "elpa.gnu.org/packages/")))
-
+  (add-to-list 'load-path "/home/azuser/git/emacs-libvterm")
+  (require 'vterm)
   )
 
 (defun dotspacemacs/user-load ()
@@ -522,6 +531,7 @@ before packages are loaded."
     (set-fontset-font t 'unicode "Symbola" nil 'prepend))
   ;; avoid split vertically
   (setq split-height-threshold nil)
+  (setq winum-scope 'frame-local)
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -558,7 +568,7 @@ This function is called at the very end of Spacemacs initialization."
    '("bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" "9d91458c4ad7c74cf946bd97ad085c0f6a40c370ac0a1cbeb2e3879f15b40553" default))
  '(evil-want-Y-yank-to-eol t)
  '(package-selected-packages
-   '(tide typescript-mode prettier-js nodejs-repl json-navigator hierarchy twittering-mode ghub let-alist pdf-tools atomic-chrome websocket logito docker tablist docker-tramp editorconfig yaml-mode shut-up parent-mode pkg-info epl gitignore-mode flx goto-chg diminish winum fuzzy json-snatcher json-reformat zenburn-theme csv-mode spinner haml-mode bind-key powerline org alert flycheck markdown-mode multiple-cursors hydra iedit csharp-mode dash-functional tern yasnippet packed auto-complete company highlight anzu smartparens bind-map evil undo-tree gh magit request helm helm-core popup avy s pcache projectile js2-mode uuidgen pug-mode org-projectile org-download ob-http livid-mode skewer-mode simple-httpd link-hint hide-comnt github-search magit-popup git-commit with-editor dash async marshal ht flyspell-correct-helm flyspell-correct eyebrowse evil-visual-mark-mode evil-unimpaired evil-ediff dumb-jump f column-enforce-mode xkcd ws-butler window-numbering which-key web-mode web-beautify volatile-highlights vi-tilde-fringe use-package toc-org tagedit spacemacs-theme spaceline smooth-scrolling smeargle slim-mode scss-mode sass-mode restclient restart-emacs rainbow-delimiters quelpa powershell popwin persp-mode pcre2el paradox page-break-lines orgit org-repo-todo org-present org-pomodoro org-plus-contrib org-bullets open-junk-file omnisharp neotree move-text mmm-mode markdown-toc magit-gitflow magit-gh-pulls macrostep lorem-ipsum linum-relative leuven-theme less-css-mode json-mode js2-refactor js-doc jade-mode info+ indent-guide ido-vertical-mode ibuffer-projectile hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flyspell helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gnuplot github-clone github-browse-file gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gist gh-md flx-ido fill-column-indicator fancy-battery expand-region exec-path-from-shell evil-visualstar evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-args evil-anzu eval-sexp-fu engine-mode emoji-cheat-sheet-plus emmet-mode elisp-slime-nav dockerfile-mode define-word company-web company-tern company-statistics company-quickhelp company-emoji coffee-mode clean-aindent-mode buffer-move bracketed-paste auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
+   '(git-gutter-fringe+ fringe-helper git-gutter+ forge closql emacsql-sqlite emacsql treepy browse-at-remote twittering-mode ghub let-alist pdf-tools atomic-chrome websocket logito docker tablist docker-tramp editorconfig yaml-mode shut-up parent-mode pkg-info epl gitignore-mode flx goto-chg diminish winum fuzzy json-snatcher json-reformat zenburn-theme csv-mode spinner haml-mode bind-key powerline org alert flycheck markdown-mode multiple-cursors hydra iedit csharp-mode dash-functional tern yasnippet packed auto-complete company highlight anzu smartparens bind-map evil undo-tree gh magit request helm helm-core popup avy s pcache projectile js2-mode uuidgen pug-mode org-projectile org-download ob-http livid-mode skewer-mode simple-httpd link-hint hide-comnt github-search magit-popup git-commit with-editor dash async marshal ht flyspell-correct-helm flyspell-correct eyebrowse evil-visual-mark-mode evil-unimpaired evil-ediff dumb-jump f column-enforce-mode xkcd ws-butler window-numbering which-key web-mode web-beautify volatile-highlights vi-tilde-fringe use-package toc-org tagedit spacemacs-theme spaceline smooth-scrolling smeargle slim-mode scss-mode sass-mode restclient restart-emacs rainbow-delimiters quelpa powershell popwin persp-mode pcre2el paradox page-break-lines orgit org-repo-todo org-present org-pomodoro org-plus-contrib org-bullets open-junk-file omnisharp neotree move-text mmm-mode markdown-toc magit-gitflow magit-gh-pulls macrostep lorem-ipsum linum-relative leuven-theme less-css-mode json-mode js2-refactor js-doc jade-mode info+ indent-guide ido-vertical-mode ibuffer-projectile hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flyspell helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gnuplot github-clone github-browse-file gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gist gh-md flx-ido fill-column-indicator fancy-battery expand-region exec-path-from-shell evil-visualstar evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-args evil-anzu eval-sexp-fu engine-mode emoji-cheat-sheet-plus emmet-mode elisp-slime-nav dockerfile-mode define-word company-web company-tern company-statistics company-quickhelp company-emoji coffee-mode clean-aindent-mode buffer-move bracketed-paste auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
