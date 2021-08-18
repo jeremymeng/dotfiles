@@ -38,32 +38,51 @@ This function should only modify configuration layer settings."
      ;; Uncomment some layer names and press `SPC f e R' (Vim style) or
      ;; `M-m f e R' (Emacs style) to install them.
      ;; ----------------------------------------------------------------
-     (auto-completion :variables
-                      auto-completion-enable-help-tooltip t
-                      auto-completion-enable-snippets-in-popup t
-                      auto-completion-enable-sort-by-usage t)     ;; better-defaults
+     (auto-completion
+      :variables
+      auto-completion-enable-help-tooltip t
+      auto-completion-enable-snippets-in-popup t
+      auto-completion-enable-sort-by-usage t)
+
      ;; better-defaults
      ;; csharp
-     (clojure :variables
-              clojure-enable-clj-refactor t)
+
+     (clojure
+      :variables
+      clojure-enable-clj-refactor t)
      dap
      docker
+
      emacs-lisp
+
      ;; emoji
+
      ibuffer
-     (git :variables
-          magit-log-section-commit-count 20
-          ;;git-magit-status-fullscreen t
-          git-enable-github-support t
-          )
-     github
+
+     (git
+      :variables
+      magit-log-section-commit-count 20
+      ;;git-magit-status-fullscreen t
+      ;;git-enable-github-support t
+      )
+
      helm
+
+     (javascript
+      :variables
+      javascript-backend 'tide
+      javascript-lsp-linter nil
+      javascript-fmt-tool 'prettier
+      javascript-repl 'nodejs)
+
      (lsp :variables
           lsp-rust-server 'rust-analyzer
           lsp-rust-analyzer-server-display-inlay-hints t)
      markdown
      ;; multiple-cursors
      org
+     ;; react
+>>>>>>> origin/master
      restclient
      (rust :variables
            rust-format-on-save t)
@@ -73,15 +92,24 @@ This function should only modify configuration layer settings."
      ;;        shell-default-position 'bottom)
      spell-checking
      syntax-checking
-     ;; version-control
      treemacs
-     (typescript :variables
-                 tide-format-options '(:tabSize 2
-                                                :indentSize 2
-                                                )
-                 typescript-indent-level 2
-                 js-indent-level 2)
+
+     (typescript
+      :variables
+      typescript-indent-level 2
+      js-indent-level 2
+      tide-format-options
+      '(
+        :tabSize 2
+        :convertTabsToSpaces t
+        :insertSpaceAfterFunctionKeywordForAnonymousFunctions nil
+        :placeOpenBraceOnNewLineForFunctions nil
+        :indentSize 2
+        :insertSpaceBeforeFunctionParenthesis nil))
+
+     ;; version-control
      yaml
+     personal-config
      )
 
 
@@ -95,10 +123,14 @@ This function should only modify configuration layer settings."
    ;; `:location' property: '(your-package :location "~/path/to/your-package/")
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages '(
-                                      htmlize
                                       indium
                                       tree-sitter
                                       tree-sitter-langs
+                                      edit-indirect
+                                      (leuven-theme
+                                       :location
+                                       (recipe :fetcher github :repo "emacs-leuven-theme")
+                                       :min-version "20200513.1933")
                                       )
 
    ;; A list of packages that cannot be updated.
@@ -140,7 +172,7 @@ It should only modify the values of Spacemacs settings."
    ;; To load it when starting Emacs add the parameter `--dump-file'
    ;; when invoking Emacs 27.1 executable on the command line, for instance:
    ;;   ./emacs --dump-file=$HOME/.emacs.d/.cache/dumps/spacemacs-27.1.pdmp
-   ;; (default (format "spacemacs-%s.pdmp" emacs-version))
+   ;; (default spacemacs-27.1.pdmp)
    dotspacemacs-emacs-dumper-dump-file (format "spacemacs-%s.pdmp" emacs-version)
 
    ;; If non-nil ELPA repositories are contacted via HTTPS whenever it's
@@ -251,7 +283,8 @@ It should only modify the values of Spacemacs settings."
    ;; refer to the DOCUMENTATION.org for more info on how to create your own
    ;; spaceline theme. Value can be a symbol or list with additional properties.
    ;; (default '(spacemacs :separator wave :separator-scale 1.5))
-   dotspacemacs-mode-line-theme '(spacemacs :separator wave :separator-scale 1.5)
+   ;;dotspacemacs-mode-line-theme '(spacemacs :separator wave :separator-scale 1.5)
+   dotspacemacs-mode-line-theme '(doom)
 
    ;; If non-nil the cursor color matches the state color in GUI Emacs.
    ;; (default t)
@@ -388,7 +421,7 @@ It should only modify the values of Spacemacs settings."
    ;; If non-nil unicode symbols are displayed in the mode line.
    ;; If you use Emacs as a daemon and wants unicode characters only in GUI set
    ;; the value to quoted `display-graphic-p'. (default t)
-   dotspacemacs-mode-line-unicode-symbols nil
+   dotspacemacs-mode-line-unicode-symbols 'display-graphic-p
 
    ;; If non-nil smooth scrolling (native-scrolling) is enabled. Smooth
    ;; scrolling overrides the default behavior of Emacs which recenters point
@@ -490,13 +523,6 @@ It should only modify the values of Spacemacs settings."
    ;; (default t)
    dotspacemacs-use-clean-aindent-mode t
 
-   ;; If non-nil shift your number row to match the entered keyboard layout
-   ;; (only in insert state). Currently supported keyboard layouts are:
-   ;; `qwerty-us', `qwertz-de' and `querty-ca-fr'.
-   ;; New layouts can be added in `spacemacs-editing' layer.
-   ;; (default nil)
-   dotspacemacs-swap-number-row nil
-
    ;; Either nil or a number of seconds. If non-nil zone out after the specified
    ;; number of seconds. (default nil)
    dotspacemacs-zone-out-when-idle nil
@@ -509,6 +535,10 @@ It should only modify the values of Spacemacs settings."
    ;; If nil the home buffer shows the full path of agenda items
    ;; and todos. If non nil only the file name is shown.
    dotspacemacs-home-shorten-agenda-source nil))
+
+(defun dotspacemacs/layers ()
+  ;; (setq-default dotspacemacs-excluded-packages '(forge))
+  )
 
 (defun dotspacemacs/user-env ()
   "Environment variables setup.
@@ -524,12 +554,14 @@ This function is called immediately after `dotspacemacs/init', before layer
 configuration.
 It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
-  ;; (setq dotspacemacs-elpa-https nil)
+  (setq dotspacemacs-elpa-https nil)
+  (xterm-mouse-mode nil)
   (setq configuration-layer-elpa-archives
         '(("melpa" . "melpa.org/packages/")
-                                        ; ("org" . "orgmode.org/elpa/")
+          ("org" . "orgmode.org/elpa/")
           ("gnu" . "elpa.gnu.org/packages/")))
-
+  (add-to-list 'load-path "/home/azuser/git/emacs-libvterm")
+  (require 'vterm)
   )
 
 (defun dotspacemacs/user-load ()
@@ -545,6 +577,9 @@ This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
+
+  (require 'window-purpose) ; workaround until https://github.com/bmag/emacs-purpose/issues/158 is fixed
+
   (setq fill-column 78)
   (setq-default indent-tabs-mode nil)
   (setq backup-directory-alist
@@ -552,6 +587,7 @@ before packages are loaded."
   (setq auto-save-file-name-transforms
         `((".*" ,temporary-file-directory t)))
   (setq-default show-trailing-whitespace t)
+  (global-visual-line-mode t)
   ;; (server-start)
   ;; (atomic-chrome-start-server)
   ;; (setq atomic-chrome-default-major-mode 'markdown-mode)
@@ -610,7 +646,7 @@ This function is called at the very end of Spacemacs initialization."
    '("bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" "9d91458c4ad7c74cf946bd97ad085c0f6a40c370ac0a1cbeb2e3879f15b40553" default))
  '(evil-want-Y-yank-to-eol t)
  '(package-selected-packages
-   '(nodejs-repl devdocs twittering-mode ghub let-alist pdf-tools atomic-chrome websocket logito docker tablist docker-tramp editorconfig yaml-mode shut-up parent-mode pkg-info epl gitignore-mode flx goto-chg diminish winum fuzzy json-snatcher json-reformat zenburn-theme csv-mode spinner haml-mode bind-key powerline org alert flycheck markdown-mode multiple-cursors hydra iedit csharp-mode dash-functional tern yasnippet packed auto-complete company highlight anzu smartparens bind-map evil undo-tree gh magit request helm helm-core popup avy s pcache projectile js2-mode uuidgen pug-mode org-projectile org-download ob-http livid-mode skewer-mode simple-httpd link-hint hide-comnt github-search magit-popup git-commit with-editor dash async marshal ht flyspell-correct-helm flyspell-correct eyebrowse evil-visual-mark-mode evil-unimpaired evil-ediff dumb-jump f column-enforce-mode xkcd ws-butler window-numbering which-key web-mode web-beautify volatile-highlights vi-tilde-fringe use-package toc-org tagedit spacemacs-theme spaceline smooth-scrolling smeargle slim-mode scss-mode sass-mode restclient restart-emacs rainbow-delimiters quelpa powershell popwin persp-mode pcre2el paradox page-break-lines orgit org-repo-todo org-present org-pomodoro org-plus-contrib org-bullets open-junk-file omnisharp neotree move-text mmm-mode markdown-toc magit-gitflow magit-gh-pulls macrostep lorem-ipsum linum-relative leuven-theme less-css-mode json-mode js2-refactor js-doc jade-mode info+ indent-guide ido-vertical-mode ibuffer-projectile hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flyspell helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gnuplot github-clone github-browse-file gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gist gh-md flx-ido fill-column-indicator fancy-battery expand-region exec-path-from-shell evil-visualstar evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-args evil-anzu eval-sexp-fu engine-mode emoji-cheat-sheet-plus emmet-mode elisp-slime-nav dockerfile-mode define-word company-web company-tern company-statistics company-quickhelp company-emoji coffee-mode clean-aindent-mode buffer-move bracketed-paste auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
+   '(doom-modeline shrink-path twittering-mode ghub let-alist pdf-tools atomic-chrome websocket logito docker tablist docker-tramp editorconfig yaml-mode shut-up parent-mode pkg-info epl gitignore-mode flx goto-chg diminish winum fuzzy json-snatcher json-reformat zenburn-theme csv-mode spinner haml-mode bind-key powerline org alert flycheck markdown-mode multiple-cursors hydra iedit csharp-mode dash-functional tern yasnippet packed auto-complete company highlight anzu smartparens bind-map evil undo-tree gh magit request helm helm-core popup avy s pcache projectile js2-mode uuidgen pug-mode org-projectile org-download ob-http livid-mode skewer-mode simple-httpd link-hint hide-comnt github-search magit-popup git-commit with-editor dash async marshal ht flyspell-correct-helm flyspell-correct eyebrowse evil-visual-mark-mode evil-unimpaired evil-ediff dumb-jump f column-enforce-mode xkcd ws-butler window-numbering which-key web-mode web-beautify volatile-highlights vi-tilde-fringe use-package toc-org tagedit spacemacs-theme spaceline smooth-scrolling smeargle slim-mode scss-mode sass-mode restclient restart-emacs rainbow-delimiters quelpa powershell popwin persp-mode pcre2el paradox page-break-lines orgit org-repo-todo org-present org-pomodoro org-plus-contrib org-bullets open-junk-file omnisharp neotree move-text mmm-mode markdown-toc magit-gitflow magit-gh-pulls macrostep lorem-ipsum linum-relative leuven-theme less-css-mode json-mode js2-refactor js-doc jade-mode info+ indent-guide ido-vertical-mode ibuffer-projectile hungry-delete htmlize hl-todo highlight-parentheses highlight-numbers highlight-indentation help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make helm-gitignore helm-flyspell helm-flx helm-descbinds helm-css-scss helm-company helm-c-yasnippet helm-ag google-translate golden-ratio gnuplot github-clone github-browse-file gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link gist gh-md flx-ido fill-column-indicator fancy-battery expand-region exec-path-from-shell evil-visualstar evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-args evil-anzu eval-sexp-fu engine-mode emoji-cheat-sheet-plus emmet-mode elisp-slime-nav dockerfile-mode define-word company-web company-tern company-statistics company-quickhelp company-emoji coffee-mode clean-aindent-mode buffer-move bracketed-paste auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line ac-ispell)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

@@ -10,8 +10,12 @@ alias envgrep='printenv | grep --color'
 alias psgrep='ps -aux | grep -v "grep --color" | grep --color'
 alias hgrep='history | grep --color'
 
+alias e='/home/azuser/git/emacs/lib-src/emacsclient -t'
+alias ed='/home/azuser/git/emacs/src/emacs --daemon'
 alias em='emacsclient -t'
+alias ew='emacsclient --c'
 alias emd='emacs --daemon'
+alias ek='emacsclient -nw -e "(kill-emacs)"'
 
 alias h='history'
 
