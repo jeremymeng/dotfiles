@@ -82,7 +82,6 @@ This function should only modify configuration layer settings."
      ;; multiple-cursors
      org
      ;; react
->>>>>>> origin/master
      restclient
      (rust :variables
            rust-format-on-save t)
@@ -109,7 +108,6 @@ This function should only modify configuration layer settings."
 
      ;; version-control
      yaml
-     personal-config
      )
 
 
@@ -127,10 +125,8 @@ This function should only modify configuration layer settings."
                                       tree-sitter
                                       tree-sitter-langs
                                       edit-indirect
-                                      (leuven-theme
-                                       :location
-                                       (recipe :fetcher github :repo "emacs-leuven-theme")
-                                       :min-version "20200513.1933")
+                                      leuven-theme
+				                              vterm
                                       )
 
    ;; A list of packages that cannot be updated.
@@ -172,7 +168,7 @@ It should only modify the values of Spacemacs settings."
    ;; To load it when starting Emacs add the parameter `--dump-file'
    ;; when invoking Emacs 27.1 executable on the command line, for instance:
    ;;   ./emacs --dump-file=$HOME/.emacs.d/.cache/dumps/spacemacs-27.1.pdmp
-   ;; (default spacemacs-27.1.pdmp)
+   ;; (default (format "spacemacs-%s.pdmp" emacs-version))
    dotspacemacs-emacs-dumper-dump-file (format "spacemacs-%s.pdmp" emacs-version)
 
    ;; If non-nil ELPA repositories are contacted via HTTPS whenever it's
@@ -246,14 +242,24 @@ It should only modify the values of Spacemacs settings."
    ;; List of items to show in startup buffer or an association list of
    ;; the form `(list-type . list-size)`. If nil then it is disabled.
    ;; Possible values for list-type are:
-   ;; `recents' `bookmarks' `projects' `agenda' `todos'.
+   ;; `recents' `recents-by-project' `bookmarks' `projects' `agenda' `todos'.
    ;; List sizes may be nil, in which case
    ;; `spacemacs-buffer-startup-lists-length' takes effect.
+   ;; The exceptional case is `recents-by-project', where list-type must be a
+   ;; pair of numbers, e.g. `(recents-by-project . (7 .  5))', where the first
+   ;; number is the project limit and the second the limit on the recent files
+   ;; within a project.
    dotspacemacs-startup-lists '((recents . 15)
                                 (projects . 7))
 
    ;; True if the home buffer should respond to resize events. (default t)
    dotspacemacs-startup-buffer-responsive t
+
+   ;; Show numbers before the startup list lines. (default t)
+   dotspacemacs-show-startup-list-numbers t
+
+   ;; The minimum delay in seconds between number key presses. (default 0.4)
+   dotspacemacs-startup-buffer-multi-digit-delay 0.4
 
    ;; Default major mode for a new empty buffer. Possible values are mode
    ;; names such as `text-mode'; and `nil' to use Fundamental mode.
@@ -262,6 +268,14 @@ It should only modify the values of Spacemacs settings."
 
    ;; Default major mode of the scratch buffer (default `text-mode')
    dotspacemacs-scratch-mode 'text-mode
+
+   ;; If non-nil, *scratch* buffer will be persistent. Things you write down in
+   ;; *scratch* buffer will be saved and restored automatically.
+   dotspacemacs-scratch-buffer-persistent nil
+
+   ;; If non-nil, `kill-buffer' on *scratch* buffer
+   ;; will bury it instead of killing.
+   dotspacemacs-scratch-buffer-unkillable nil
 
    ;; Initial message in the scratch buffer, such as "Welcome to Spacemacs!"
    ;; (default nil)
@@ -283,14 +297,15 @@ It should only modify the values of Spacemacs settings."
    ;; refer to the DOCUMENTATION.org for more info on how to create your own
    ;; spaceline theme. Value can be a symbol or list with additional properties.
    ;; (default '(spacemacs :separator wave :separator-scale 1.5))
-   ;;dotspacemacs-mode-line-theme '(spacemacs :separator wave :separator-scale 1.5)
-   dotspacemacs-mode-line-theme '(doom)
+   dotspacemacs-mode-line-theme '(spacemacs :separator wave :separator-scale 1.5)
 
    ;; If non-nil the cursor color matches the state color in GUI Emacs.
    ;; (default t)
    dotspacemacs-colorize-cursor-according-to-state t
 
-   ;; Default font or prioritized list of fonts.
+   ;; Default font or prioritized list of fonts. The `:size' can be specified as
+   ;; a non-negative integer (pixel size), or a floating-point (point size).
+   ;; Point size is recommended, because it's device independent. (default 10.0)
    dotspacemacs-default-font '("Source Code Pro"
                                :size 10.0
                                :weight normal
@@ -308,7 +323,7 @@ It should only modify the values of Spacemacs settings."
 
    ;; The leader key accessible in `emacs state' and `insert state'
    ;; (default "M-m")
-   dotspacemacs-emacs-leader-key "M-SPC"
+   dotspacemacs-emacs-leader-key "M-m"
 
    ;; Major mode leader key is a shortcut key which is the equivalent of
    ;; pressing `<leader> m`. Set it to `nil` to disable it. (default ",")
@@ -428,12 +443,16 @@ It should only modify the values of Spacemacs settings."
    ;; when it reaches the top or bottom of the screen. (default t)
    dotspacemacs-smooth-scrolling t
 
+   ;; Show the scroll bar while scrolling. The auto hide time can be configured
+   ;; by setting this variable to a number. (default t)
+   dotspacemacs-scroll-bar-while-scrolling t
+
    ;; Control line numbers activation.
    ;; If set to `t', `relative' or `visual' then line numbers are enabled in all
    ;; `prog-mode' and `text-mode' derivatives. If set to `relative', line
    ;; numbers are relative. If set to `visual', line numbers are also relative,
-   ;; but lines are only visual lines are counted. For example, folded lines
-   ;; will not be counted and wrapped lines are counted as multiple lines.
+   ;; but only visual lines are counted. For example, folded lines will not be
+   ;; counted and wrapped lines are counted as multiple lines.
    ;; This variable can also be set to a property list for finer control:
    ;; '(:relative nil
    ;;   :visual nil
@@ -452,9 +471,14 @@ It should only modify the values of Spacemacs settings."
    ;; (default 'evil)
    dotspacemacs-folding-method 'evil
 
-   ;; If non-nil `smartparens-strict-mode' will be enabled in programming modes.
+   ;; If non-nil and `dotspacemacs-activate-smartparens-mode' is also non-nil,
+   ;; `smartparens-strict-mode' will be enabled in programming modes.
    ;; (default nil)
    dotspacemacs-smartparens-strict-mode t
+
+   ;; If non-nil smartparens-mode will be enabled in programming modes.
+   ;; (default t)
+   dotspacemacs-activate-smartparens-mode t
 
    ;; If non-nil pressing the closing parenthesis `)' key in insert mode passes
    ;; over any automatically added closing parenthesis, bracket, quote, etc...
@@ -502,12 +526,18 @@ It should only modify the values of Spacemacs settings."
    ;; %n - Narrow if appropriate
    ;; %z - mnemonics of buffer, terminal, and keyboard coding systems
    ;; %Z - like %z, but including the end-of-line format
+   ;; If nil then Spacemacs uses default `frame-title-format' to avoid
+   ;; performance issues, instead of calculating the frame title by
+   ;; `spacemacs/title-prepare' all the time.
    ;; (default "%I@%S")
    dotspacemacs-frame-title-format "%I@%S"
 
    ;; Format specification for setting the icon title format
    ;; (default nil - same as frame-title-format)
    dotspacemacs-icon-title-format nil
+
+   ;; Show trailing whitespace (default t)
+   dotspacemacs-show-trailing-whitespace t
 
    ;; Delete whitespace while saving buffer. Possible values are `all'
    ;; to aggressively delete empty line and long sequences of whitespace,
@@ -516,12 +546,22 @@ It should only modify the values of Spacemacs settings."
    ;; (default nil)
    dotspacemacs-whitespace-cleanup nil
 
-   ;; If non nil activate `clean-aindent-mode' which tries to correct
-   ;; virtual indentation of simple modes. This can interfer with mode specific
+   ;; If non-nil activate `clean-aindent-mode' which tries to correct
+   ;; virtual indentation of simple modes. This can interfere with mode specific
    ;; indent handling like has been reported for `go-mode'.
    ;; If it does deactivate it here.
    ;; (default t)
    dotspacemacs-use-clean-aindent-mode t
+
+   ;; Accept SPC as y for prompts if non-nil. (default nil)
+   dotspacemacs-use-SPC-as-y nil
+
+   ;; If non-nil shift your number row to match the entered keyboard layout
+   ;; (only in insert state). Currently supported keyboard layouts are:
+   ;; `qwerty-us', `qwertz-de' and `querty-ca-fr'.
+   ;; New layouts can be added in `spacemacs-editing' layer.
+   ;; (default nil)
+   dotspacemacs-swap-number-row nil
 
    ;; Either nil or a number of seconds. If non-nil zone out after the specified
    ;; number of seconds. (default nil)
@@ -533,12 +573,11 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-pretty-docs nil
 
    ;; If nil the home buffer shows the full path of agenda items
-   ;; and todos. If non nil only the file name is shown.
-   dotspacemacs-home-shorten-agenda-source nil))
+   ;; and todos. If non-nil only the file name is shown.
+   dotspacemacs-home-shorten-agenda-source nil
 
-(defun dotspacemacs/layers ()
-  ;; (setq-default dotspacemacs-excluded-packages '(forge))
-  )
+   ;; If non-nil then byte-compile some of Spacemacs files.
+   dotspacemacs-byte-compile nil))
 
 (defun dotspacemacs/user-env ()
   "Environment variables setup.
@@ -555,22 +594,66 @@ configuration.
 It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
   (setq dotspacemacs-elpa-https nil)
-  (xterm-mouse-mode nil)
   (setq configuration-layer-elpa-archives
         '(("melpa" . "melpa.org/packages/")
           ("org" . "orgmode.org/elpa/")
           ("gnu" . "elpa.gnu.org/packages/")))
-  (add-to-list 'load-path "/home/azuser/git/emacs-libvterm")
-  (require 'vterm)
   )
 
 (defun dotspacemacs/user-load ()
   "Library to load while dumping.
 This function is called only while dumping Spacemacs configuration. You can
 `require' or `load' the libraries of your choice that will be included in the
-dump."
-  )
+dump.")
 
+
+(defun my/server-ensure-safe-dir (dir)
+  "Make sure DIR is a directory with no race-condition issues.
+Creates the directory if necessary and makes sure:
+- there's no symlink involved
+- it's owned by us
+- it's not readable/writable by anybody else."
+  (setq dir (directory-file-name dir))
+  (let ((attrs (file-attributes dir 'integer)))
+    (unless attrs
+      (cl-letf (((default-file-modes) ?\700)) (make-directory dir t))
+      (setq attrs (file-attributes dir 'integer)))
+
+    ;; Check that it's safe for use.
+    (let* ((uid (nth 2 attrs))
+	   (w32 (eq system-type 'windows-nt))
+           (unsafe (cond
+                    ((not (eq t (car attrs)))
+                     (if (null attrs) "its attributes can't be checked"
+                       (format "it is a %s"
+                               (if (stringp (car attrs))
+                                   "symlink" "file"))))
+                    ((and w32 (zerop uid)) ; on FAT32?
+                     (display-warning
+                      'server
+                      (format-message "\
+Using `%s' to store Emacs-server authentication files.
+Directories on FAT32 filesystems are NOT secure against tampering.
+See variable `server-auth-dir' for details."
+                                      (file-name-as-directory dir))
+                      :warning)
+                     nil)
+                    ((and (/= uid (user-uid)) ; is the dir ours?
+                          (or (not w32)
+                              ;; Files created on Windows by Administrator
+                              ;; (RID=500) have the Administrators (RID=544)
+                              ;; group recorded as the owner.
+                              (/= uid 544) (/= (user-uid) 500)))
+                     (format "it is not owned by you (owner = %s (%d))"
+                             (user-full-name uid) uid))
+                    (w32 nil)           ; on NTFS?
+                    ((/= 0 (logand ?\077 (file-modes dir)))
+                     (format "it is accessible by others (%03o)"
+                             (file-modes dir)))
+                    (t nil))))
+      (when unsafe
+        (message "`%s' is not a safe directory because %s"
+               (expand-file-name dir) unsafe)))))
 (defun dotspacemacs/user-config ()
   "Configuration for user code:
 This function is called at the very end of Spacemacs startup, after layer
@@ -587,7 +670,7 @@ before packages are loaded."
   (setq auto-save-file-name-transforms
         `((".*" ,temporary-file-directory t)))
   (setq-default show-trailing-whitespace t)
-  (global-visual-line-mode t)
+  (global-visual-line-mode)
   ;; (server-start)
   ;; (atomic-chrome-start-server)
   ;; (setq atomic-chrome-default-major-mode 'markdown-mode)
@@ -607,9 +690,13 @@ before packages are loaded."
   (setq winum-scope 'frame-local)
   (setq markdown-fontify-code-blocks-natively t)
   (setq spacemacs-useless-buffers-regexp '("magit-.*: .*"))
-  (normal-erase-is-backspace-mode)
+  (setq normal-erase-is-backspace t)
+
   (setq git-link-default-remote "upstream"
-        git-link-default-branch "master")
+        git-link-default-branch "main")
+
+  (advice-add 'server-ensure-safe-dir :override #'my/server-ensure-safe-dir)
+
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
