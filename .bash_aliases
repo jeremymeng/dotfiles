@@ -19,6 +19,8 @@ alias ek='emacsclient -nw -e "(kill-emacs)"'
 
 alias h='history'
 
+alias nr='npm run'
+
 alias ta='tmux attach'
 alias td='tmux detach'
 
