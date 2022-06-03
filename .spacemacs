@@ -106,10 +106,11 @@ This function should only modify configuration layer settings."
         :indentSize 2
         :insertSpaceBeforeFunctionParenthesis nil))
 
+     treemacs
      ;; version-control
      yaml
+     personal-config
      )
-
 
 
    ;; List of additional packages that will be installed without being wrapped
@@ -152,9 +153,13 @@ It should only modify the values of Spacemacs settings."
   ;; This setq-default sexp is an exhaustive list of all the supported
   ;; spacemacs settings.
   (setq-default
-   ;; If non-nil then enable support for the portable dumper. You'll need
-   ;; to compile Emacs 27 from source following the instructions in file
+   ;; If non-nil then enable support for the portable dumper. You'll need to
+   ;; compile Emacs 27 from source following the instructions in file
    ;; EXPERIMENTAL.org at to root of the git repository.
+   ;;
+   ;; WARNING: pdumper does not work with Native Compilation, so it's disabled
+   ;; regardless of the following setting when native compilation is in effect.
+   ;;
    ;; (default nil)
    dotspacemacs-enable-emacs-pdumper nil
 
@@ -249,8 +254,8 @@ It should only modify the values of Spacemacs settings."
    ;; pair of numbers, e.g. `(recents-by-project . (7 .  5))', where the first
    ;; number is the project limit and the second the limit on the recent files
    ;; within a project.
-   dotspacemacs-startup-lists '((recents . 15)
-                                (projects . 7))
+   dotspacemacs-startup-lists '((recents . 20)
+                                (projects . 5))
 
    ;; True if the home buffer should respond to resize events. (default t)
    dotspacemacs-startup-buffer-responsive t
@@ -260,6 +265,11 @@ It should only modify the values of Spacemacs settings."
 
    ;; The minimum delay in seconds between number key presses. (default 0.4)
    dotspacemacs-startup-buffer-multi-digit-delay 0.4
+
+   ;; If non-nil, show file icons for entries and headings on Spacemacs home buffer.
+   ;; This has no effect in terminal or if "all-the-icons" package or the font
+   ;; is not installed. (default nil)
+   dotspacemacs-startup-buffer-show-icons nil
 
    ;; Default major mode for a new empty buffer. Possible values are mode
    ;; names such as `text-mode'; and `nil' to use Fundamental mode.
@@ -297,7 +307,8 @@ It should only modify the values of Spacemacs settings."
    ;; refer to the DOCUMENTATION.org for more info on how to create your own
    ;; spaceline theme. Value can be a symbol or list with additional properties.
    ;; (default '(spacemacs :separator wave :separator-scale 1.5))
-   dotspacemacs-mode-line-theme '(spacemacs :separator wave :separator-scale 1.5)
+   ;;dotspacemacs-mode-line-theme '(spacemacs :separator wave :separator-scale 1.5)
+   dotspacemacs-mode-line-theme '(doom)
 
    ;; If non-nil the cursor color matches the state color in GUI Emacs.
    ;; (default t)
@@ -579,13 +590,18 @@ It should only modify the values of Spacemacs settings."
    ;; If non-nil then byte-compile some of Spacemacs files.
    dotspacemacs-byte-compile nil))
 
+(defun dotspacemacs/layers ()
+  ;; (setq-default dotspacemacs-excluded-packages '(forge))
+  )
+
 (defun dotspacemacs/user-env ()
   "Environment variables setup.
 This function defines the environment variables for your Emacs session. By
 default it calls `spacemacs/load-spacemacs-env' which loads the environment
 variables declared in `~/.spacemacs.env' or `~/.spacemacs.d/.spacemacs.env'.
 See the header of this file for more information."
-  (spacemacs/load-spacemacs-env))
+  (spacemacs/load-spacemacs-env)
+)
 
 (defun dotspacemacs/user-init ()
   "Initialization for user code:
@@ -594,9 +610,9 @@ configuration.
 It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
   (setq dotspacemacs-elpa-https nil)
+  (xterm-mouse-mode nil)
   (setq configuration-layer-elpa-archives
         '(("melpa" . "melpa.org/packages/")
-          ("org" . "orgmode.org/elpa/")
           ("gnu" . "elpa.gnu.org/packages/")))
   )
 
@@ -669,8 +685,7 @@ before packages are loaded."
         `((".*" . ,temporary-file-directory)))
   (setq auto-save-file-name-transforms
         `((".*" ,temporary-file-directory t)))
-  (setq-default show-trailing-whitespace t)
-  (global-visual-line-mode)
+  (global-visual-line-mode t)
   ;; (server-start)
   ;; (atomic-chrome-start-server)
   ;; (setq atomic-chrome-default-major-mode 'markdown-mode)
@@ -690,8 +705,7 @@ before packages are loaded."
   (setq winum-scope 'frame-local)
   (setq markdown-fontify-code-blocks-natively t)
   (setq spacemacs-useless-buffers-regexp '("magit-.*: .*"))
-  (setq normal-erase-is-backspace t)
-
+  (normal-erase-is-backspace-mode)
   (setq git-link-default-remote "upstream"
         git-link-default-branch "main")
 
