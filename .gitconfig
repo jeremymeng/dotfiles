@@ -251,3 +251,5 @@
   bmps = "!git mps blogoosfero"
   nghs = "!git f noosfero; git ps ghnoosfero noosfero/master:master"
 
+[github]
+	user = jeremymeng

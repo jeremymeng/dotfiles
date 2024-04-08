@@ -20,6 +20,11 @@ alias ek='emacsclient -nw -e "(kill-emacs)"'
 alias h='history'
 
 alias nr='npm run'
+alias rbt='rush build -t'
+alias nri='npm run integration-test:node'
+alias nrt='npm run build:test'
+alias nru='npm run unit-test:node'
+alias upnpm='git checkout upstream/main common/config/rush/pnpm-lock.yaml && rush update && git add common/config/rush/pnpm-lock.yaml'
 
 alias ta='tmux attach'
 alias td='tmux detach'
