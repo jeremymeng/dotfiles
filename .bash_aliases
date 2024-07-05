@@ -20,10 +20,17 @@ alias ek='emacsclient -nw -e "(kill-emacs)"'
 alias h='history'
 
 alias nr='npm run'
+alias nrc='npm run format && npm run lint'
 alias rbt='rush build -t'
+alias rbo='rush build --only'
+alias rlo='rush lint --only'
 alias nri='npm run integration-test:node'
+alias nrib='npm run integration-test:browser'
 alias nrt='npm run build:test'
 alias nru='npm run unit-test:node'
+alias nrub='npm run unit-test:browser'
+alias nv='npm view'
+
 alias upnpm='git checkout upstream/main common/config/rush/pnpm-lock.yaml && rush update && git add common/config/rush/pnpm-lock.yaml'
 
 alias ta='tmux attach'
@@ -31,8 +38,7 @@ alias td='tmux detach'
 
 alias mgt='emacsclient -nw -e "(magit-status)"'
 
-# I don't want to maintain another rc file for bash so put everything here.
-PS1='\[\e[0;32m\]\u\[\e[m\] \[\e[1;34m\]\w\[\e[m\] \[\e[1;32m\]\$\[\e[m\] \[\e[1;37m\]'
+source ~/.bash_prompt
 
 export COLORTERM=truecolor
 
